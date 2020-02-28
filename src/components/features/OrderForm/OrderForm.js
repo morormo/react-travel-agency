@@ -6,16 +6,19 @@ import {Row, Col, Grid} from 'react-flexbox-grid';
 import OrderOption from '../OrderOption/OrderOption';
 import pricing from '../../../data/pricing.json';
 import Button from '../../common/Button/Button';
-import { formatPrice } from '"../../../utils/formatPrice';
+import { formatPrice } from '../../../utils/formatPrice';
 import { calculateTotal } from '../../../utils/calculateTotal';
 import settings from '../../../data/settings';
 
-const sendOrder = (options, tripCost) => {
+const sendOrder = (options, tripCost, tripId, tripDescription, countryName) => {
   const totalCost = formatPrice(calculateTotal(tripCost, options));
 
   const payload = {
     ...options,
     totalCost,
+    tripId,
+    tripDescription,
+    countryName,
   };
 
   const url = settings.db.url + '/' + settings.db.endpoint.orders;
@@ -29,17 +32,18 @@ const sendOrder = (options, tripCost) => {
     body: JSON.stringify(payload),
   };
 
-  fetch(url, fetchOptions)
-    .then(function(response){
-      return response.json();
-    }).then(function(parsedResponse){
-      console.log('parsedResponse', parsedResponse);
-    });
+  if (options['name'] && options['contact']) {
+    fetch(url, fetchOptions)
+      .then(function(response) {
+        return response.json();
+      });
+  } else {
+    alert('Please complete name and contact');
+  }
 };
-
 class OrderForm extends React.Component {
   render() {
-    const {options, tripCost, setOrderOption} = this.props;
+    const{tripCost, options, setOrderOption, tripId, tripDescription,countryName} = this.props;
     return (
       <Grid>
         <Row>
@@ -52,7 +56,7 @@ class OrderForm extends React.Component {
             <OrderSummary cost={tripCost} options={options} />
           </Col>
           <Col xs={12}>
-            <Button onClick={() => sendOrder(options, tripCost)}>Order now!</Button>
+            <Button onClick={() => sendOrder(options, tripCost, tripId, tripDescription, countryName)}>Order now!</Button>
           </Col>
         </Row>
       </Grid>
@@ -60,10 +64,14 @@ class OrderForm extends React.Component {
   }
 }
 
+
 OrderForm.propTypes = {
   options: PropTypes.object,
   tripCost: PropTypes.number,
   setOrderOption: PropTypes.func,
+  tripId: PropTypes.string,
+  tripDescription: PropTypes.string,
+  countryName: PropTypes.string,
 };
 
 export default OrderForm;
