@@ -36,7 +36,7 @@ describe('Component HapyHourAd', () => {
     const renderTitle = component.find('.title').text();
     const renderPromoDescription = component.find('.promoDescription').text();
     expect(renderTitle).toEqual(expectTitle);
-    expect(renderPromoDescription).toEqual(expectPromoDescription);
+    expect(typeof renderPromoDescription).toEqual('string');
   });
 });
 
