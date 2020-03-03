@@ -9,7 +9,8 @@ const select = {
 };
 const mockProps = {
   title: 'Happy Hour',
-  promoDescription: '10h',
+  promoDescription: 'Promotion time',
+  
 };
 
 describe('Component HapyHourAd', () => {
@@ -60,7 +61,7 @@ const checkDescriptionAtTime = (time, expectedDescription) => {
     global.Date = mockDate(`2019-05-14T${time}.135Z`);
 
     const component = shallow(<HappyHourAd {...mockProps} />);
-    const renderedTime = component.find(select.countdown).text();
+    const renderedTime = component.find(select.promoDescription).text();
     expect(renderedTime).toEqual(expectedDescription);
     // eslint-disable-next-line no-undef
     global.Date = trueDate;
@@ -86,7 +87,7 @@ const checkDescriptionAfterTime = (time, delaySeconds, expectedDescription) => {
     global.Date = mockDate(newTime.getTime());
 
     jest.advanceTimersByTime(delaySeconds * 1000);
-    const renderedTime = component.find(select.countdown).text();
+    const renderedTime = component.find(select.promoDescription).text();
     expect(renderedTime).toEqual(expectedDescription);
     // eslint-disable-next-line no-undef
     global.Date = trueDate;
@@ -98,4 +99,14 @@ describe('Component HappyHourAd with mocked Date and delay', () => {
   checkDescriptionAfterTime('11:57:58', 2, '120');
   checkDescriptionAfterTime('11:59:58', 1, '1');
   checkDescriptionAfterTime('13:00:00', 60 * 60, 22 * 60 * 60 + '');
+});
+
+describe('Component HappyHourAdd with mocked Date', () => {
+  checkDescriptionAtTime('12:00:00', mockProps.promoDescription);
+  checkDescriptionAtTime('12:37:58', mockProps.promoDescription);
+  checkDescriptionAtTime('12:59:59', mockProps.promoDescription);
+});
+
+describe('Component HappyHourAd with mocked Date and delay to promo', () => {
+  checkDescriptionAfterTime('11:59:59', 2, mockProps.promoDescription);
 });
